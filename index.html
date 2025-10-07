@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cyber Quest — Smart and Safe Online</title>
+  <style>
+    :root{
+      --bg:#f6fbff;
+      --card:#ffffff;
+      --accent:#2b7aee;
+      --accent-2:#2ec27e;
+      --muted:#6b7280;
+      --success:#16a34a;
+      --danger:#ef4444;
+      --gold:#f59e0b;
+      --shadow: 0 6px 18px rgba(20,40,80,0.08);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#e9f1ff 0%, var(--bg) 40%);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .app{
+      width:100%;
+      max-width:980px;
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:18px 22px;
+      background:linear-gradient(90deg,var(--accent),#60a5fa);
+      color:white;
+    }
+    header h1{font-size:20px;margin:0;}
+    header p{margin:0;color:rgba(255,255,255,0.9);font-size:13px}
+
+    .main{
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap:18px;
+      padding:20px;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      padding:14px;
+      border-radius:8px;
+      background:linear-gradient(180deg,#fff,#f7fbff);
+      min-height:420px;
+    }
+    .player-box{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+    .avatar{
+      width:64px;height:64px;border-radius:8px;background:linear-gradient(180deg,#fff,#eef7ff);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);
+      box-shadow:0 2px 6px rgba(16,24,40,0.06);
+      font-size:18px;
+    }
+    .player-info small{display:block;color:var(--muted);font-size:12px}
+    .player-info h3{margin:0;font-size:16px}
+    .progress{
+      margin-top:10px;
+    }
+    .levels{
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .level-btn{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:10px;
+      border-radius:8px;
+      background:white;
+      border:1px solid #eef2ff;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+    }
+    .level-btn.locked{opacity:0.6;cursor:not-allowed}
+    .level-btn .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block}
+    .level-btn .dot.locked{background:#cbd5e1}
+    .trust-points{
+      margin-top:16px;padding:12px;border-radius:8px;background:#fcf8e6;border:1px solid #fff0c4;color:#7a4f00;
+      font-weight:600;
+    }
+
+    /* Content */
+    .content{
+      padding:14px;
+      min-height:420px;
+    }
+    .card{
+      background:linear-gradient(180deg,#fff,#fbfeff);
+      padding:16px;border-radius:10px;border:1px solid #eef6ff;
+      box-shadow:0 4px 12px rgba(14,30,60,0.03);
+    }
+    .question{
+      font-size:18px;margin:0 0 8px 0;
+    }
+    .help{color:var(--muted);font-size:13px;margin-bottom:12px}
+    .choices{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+    .choice{
+      padding:10px;border-radius:8px;border:1px dashed #e6eefb;background:linear-gradient(180deg,#fff,#f7fbff);
+      cursor:pointer;
+    }
+    .choice.correct{border-color:var(--success);background:linear-gradient(90deg,#ecfdf5,#ffffff)}
+    .choice.wrong{border-color:var(--danger);background:linear-gradient(90deg,#fff5f5,#ffffff)}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .meta button{padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer}
+    .meta .small{color:var(--muted);font-size:13px}
+
+    .feedback{margin-top:12px;padding:10px;border-radius:8px;background:#f1faff;border:1px solid #dceeef;color:#0b567a}
+    .hidden{display:none}
+
+    footer{
+      padding:12px 20px;background:#f8fafc;border-top:1px solid #eef2ff;font-size:13px;color:var(--muted);
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    .badge{
+      display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,var(--gold),#fcd34d);color:#3b2f00;font-weight:800;
+      box-shadow:0 6px 18px rgba(245,158,11,0.1);
+    }
+
+    /* certificate print area */
+    #certificate{
+      padding:20px;background:white;border-radius:6px;max-width:780px;margin:20px auto;display:none;
+      box-shadow:0 6px 24px rgba(0,0,0,0.08);
+    }
+    #certificate h2{margin:0 0 12px 0;font-size:22px;color:#073763}
+    #certificate .big{font-size:18px;font-weight:700;margin:8px 0}
+    .print-btn{background:var(--accent-2);color:white;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+
+    /* small screens */
+    @media (max-width:880px){
+      .main{grid-template-columns:1fr;padding:14px}
+      .sidebar{order:2}
+      .content{order:1}
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Cyber Quest game">
+    <header>
+      <div style="width:48px;height:48px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">CS</div>
+      <div>
+        <h1>Cyber Quest</h1>
+        <p>Smart and Safe Online: Explore, Learn, Connect</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="badge" id="trustBadge">Trust 0</div>
+      </div>
+    </header>
+
+    <div class="main">
+      <aside class="sidebar" aria-label="Game controls and progress">
+        <div class="player-box">
+          <div class="avatar" id="avatar">YOU</div>
+          <div class="player-info">
+            <input id="playerName" placeholder="Enter your name" style="font-size:15px;padding:6px;border-radius:6px;border:1px solid #e6eefb" />
+            <small>Type your name then press Start</small>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Levels</strong>
+            <small class="small" id="progressText">0 / 7 completed</small>
+          </div>
+
+          <div class="levels" id="levelsList">
+            <!-- Level buttons created by JS -->
+          </div>
+
+          <div class="trust-points" aria-live="polite">
+            Trust Points: <strong id="trustPoints">0</strong>
+            <div style="font-size:12px;color:var(--muted);margin-top:6px">Earn points by making safe choices</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <button id="resetBtn" class="level-btn" style="background:#fff6f6;border:1px solid #fee2e2;color:var(--danger)">Reset Progress</button>
+        </div>
+      </aside>
+
+      <main class="content" id="content" aria-live="polite">
+        <div class="card" id="welcomeCard">
+          <h2 style="margin-top:0">Welcome to Cyber Quest</h2>
+          <p class="help">Become a Digital Hero of CyberVille by completing short missions that teach you how to stay smart and safe online. Each correct safe choice earns Trust Points.</p>
+          <ol style="margin-top:10px;color:var(--muted)">
+            <li>Enter your name and press Start</li>
+            <li>Complete the levels in order or jump to unlocked levels</li>
+            <li>Collect Trust Points and print your certificate at the end</li>
+          </ol>
+          <div style="margin-top:12px">
+            <button id="startBtn" style="background:var(--accent);color:white;border:0;padding:10px 14px;border-radius:8px;cursor:pointer">Start Game</button>
+            <button id="howBtn" style="margin-left:8px;padding:8px 12px;border-radius:8px;border:1px solid #e6eefb;background:white">How to Play</button>
+          </div>
+        </div>
+
+        <div class="card hidden" id="questionCard" role="region">
+          <h3 id="levelTitle" style="margin:0 0 8px 0">Level Title</h3>
+          <p class="help" id="levelDesc">Short description</p>
+          <hr style="border:none;border-top:1px solid #eef7ff;margin:12px 0">
+          <div id="qArea">
+            <p class="question" id="questionText">Question text</p>
+            <div class="choices" id="choicesList" role="list"></div>
+            <div class="meta">
+              <div class="small">Level <span id="currentLevel">1</span> of <span id="totalLevels">7</span></div>
+              <div>
+                <button id="nextBtn" class="hidden">Next</button>
+                <button id="finishBtn" class="hidden" style="background:var(--accent-2)">Finish Level</button>
+              </div>
+            </div>
+            <div id="feedback" class="feedback hidden" role="status"></div>
+          </div>
+        </div>
+
+        <div class="card hidden" id="finalCard">
+          <h2>Well done!</h2>
+          <p class="help">You have completed the missions. Download your certificate or share your score with friends and classmates.</p>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <button id="printCertBtn" class="print-btn">Print Certificate</button>
+            <button id="restartBtn" style="background:var(--accent);color:white;padding:10px;border-radius:8px;border:0;cursor:pointer">Play Again</button>
+          </div>
+
+          <div id="scoreSummary" style="margin-top:14px;color:var(--muted)"></div>
+        </div>
+
+        <!-- hidden printable certificate container -->
+        <div id="certificate" aria-hidden="true">
+          <div style="text-align:center">
+            <h2>Certificate of Digital Citizenship</h2>
+            <div style="font-size:14px;color:var(--muted)">Smart and Safe Online: Explore, Learn, Connect</div>
+            <div style="height:14px"></div>
+            <div class="big">This certifies that</div>
+            <div id="certName" style="font-size:20px;font-weight:800;color:#0b3b69">[Name]</div>
+            <div style="height:10px"></div>
+            <div class="big">has completed Cyber Quest and earned</div>
+            <div id="certPoints" style="font-size:20px;font-weight:700;color:#0b3b69">0 Trust Points</div>
+            <div style="height:14px"></div>
+            <div style="font-size:13px;color:var(--muted)">Date: <span id="certDate"></span></div>
+            <div style="height:12px"></div>
+            <div style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+              <div style="text-align:left">
+                <div style="font-weight:700">Webfala Digital Skills for All Initiative</div>
+                <div style="font-size:12px;color:var(--muted)">Empowering children with safe digital skills</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:12px;color:var(--muted)">Signature</div>
+                <div style="margin-top:24px;border-top:1px solid #e6eefb;width:160px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <footer>
+      <div>Made by Webfala Digital Skills for All Initiative</div>
+      <div style="font-size:13px;color:var(--muted)">Tip: Trust Points show how safely you used your digital skills</div>
+    </footer>
+  </div>
+
+  <script>
+    /* ---------- Game data ---------- */
+    const levels = [
+      {
+        id: 1,
+        title: "The Internet Explorer",
+        desc: "Learn how the internet works and spot safe websites",
+        questions: [
+          { q:"What is the Internet?", choices:["A global network connecting devices","A type of music","A video game"], correct:0, explain:"The internet connects computers, tablets and phones so people can share information and communicate." },
+          { q:"Which address shows a secure website?", choices:["http://example","https://example","ftp://example"], correct:1, explain:"Secure sites use https and often a padlock icon." },
+          { q:"Undersea cables help the internet by", choices:["Carrying data between countries","Making phones look cool","Growing plants"], correct:0, explain:"Undersea cables carry internet data across oceans." }
+        ]
+      },
+      {
+        id: 2,
+        title: "Password Protectors",
+        desc: "Create strong passwords and learn why they matter",
+        questions: [
+          { q:"Which is a strong password example?", choices:["mypet","MyDog@2025!","12345"], correct:1, explain:"Strong passwords use letters, numbers and symbols and are not personal info."},
+          { q:"You should share your password with", choices:["A trusted adult only","Everyone","Friends online"], correct:0, explain:"Only share passwords with a parent or trusted adult."},
+          { q:"Two-step verification does what?", choices:["Makes login safer by sending a code","Makes your screen brighter","Erases your messages"], correct:0, explain:"Two-step verification adds an extra code to keep accounts safe."}
+        ]
+      },
+      {
+        id: 3,
+        title: "Social Media Safari",
+        desc: "Use social media kindly and protect your privacy",
+        questions: [
+          { q:"Before posting a photo of a friend you should", choices:["Ask for permission","Post right away","Tag everyone"], correct:0, explain:"Ask permission before posting others photos."},
+          { q:"If a stranger sends you a friend request, you should", choices:["Accept it","Ignore and ask an adult","Reply with personal info"], correct:1, explain:"Ask an adult before accepting strangers."},
+          { q:"What is a digital footprint?", choices:["A mark on your screen","Everything you post online","A shoe print"], correct:1, explain:"Your posts and activity online make up your digital footprint."}
+        ]
+      },
+      {
+        id: 4,
+        title: "The Cyberbully Challenge",
+        desc: "Recognize bullying and learn how to act",
+        questions: [
+          { q:"If someone insults you online, the best first step is to", choices:["Reply angrily","Block, report and tell an adult","Share it with others"], correct:1, explain:"Block, report and tell an adult."},
+          { q:"Which is a sign someone may be a predator?", choices:["Asking to keep messages secret","Talking about schoolwork","Saying hello"], correct:0, explain:"Predators often ask for secrets and private information."},
+          { q:"You see a friend being bullied online. You should", choices:["Join in","Support them and tell an adult","Record and share it"], correct:1, explain:"Support the friend, report and tell an adult."}
+        ]
+      },
+      {
+        id: 5,
+        title: "The AI Adventure",
+        desc: "Discover AI around you and how to be careful",
+        questions: [
+          { q:"AI stands for", choices:["Automatic Internet","Artificial Intelligence","Active Image"], correct:1, explain:"AI means Artificial Intelligence."},
+          { q:"Which is an example of AI?", choices:["A voice assistant","A paper book","A pencil"], correct:0, explain:"Voice assistants use AI to understand speech."},
+          { q:"Deepfakes are", choices:["Real historic photos","Fake images or videos that look real","A type of candy"], correct:1, explain:"Deepfakes are fake media created with AI."}
+        ]
+      },
+      {
+        id: 6,
+        title: "Digital Balance Zone",
+        desc: "Build healthy routines with screen time and rest",
+        questions: [
+          { q:"A sign you need a screen break is", choices:["Clear focused reading","Tired eyes or poor sleep","Feeling energetic"], correct:1, explain:"Tired eyes or poor sleep are signs to take a break."},
+          { q:"Good balance includes", choices:["Only screens all day","Screen time and outdoor play","Never using any device"], correct:1, explain:"Balance mixes online time with play and rest."},
+          { q:"Before bedtime you should", choices:["Use phone in bed","Turn off screens 30 minutes before sleep","Play loud games"], correct:1, explain:"Avoid screens before sleep for better rest."}
+        ]
+      },
+      {
+        id: 7,
+        title: "Final Mission: Cyber Hero League",
+        desc: "Use everything you learned to protect CyberVille",
+        questions: [
+          { q:"You get a message asking for your password. You:", choices:["Give it","Refuse and tell an adult","Ignore the message forever"], correct:1, explain:"Never share passwords. Tell an adult."},
+          { q:"You see a news story that seems strange. You:", choices:["Share immediately","Check trusted sources first","Make a meme about it"], correct:1, explain:"Verify information before sharing."},
+          { q:"Your friend is sad after being bullied online. You:", choices:["Laugh about it","Listen, support and tell an adult","Post it to gain likes"], correct:1, explain:"Support your friend and get help."}
+        ]
+      }
+    ];
+
+    /* ---------- State ---------- */
+    let state = {
+      playerName: '',
+      trustPoints: 0,
+      currentLevel: 1,
+      currentQuestionIndex: 0,
+      completedLevels: [],
+      lockedLevels: []
+    };
+
+    const totalLevels = levels.length;
+    const levelsListEl = document.getElementById('levelsList');
+    const trustPointsEl = document.getElementById('trustPoints');
+    const trustBadgeEl = document.getElementById('trustBadge');
+    const progressTextEl = document.getElementById('progressText');
+
+    /* ---------- UI helpers ---------- */
+    function saveState(){
+      localStorage.setItem('cyberquest.state', JSON.stringify(state));
+    }
+    function loadState(){
+      const s = localStorage.getItem('cyberquest.state');
+      if(s) state = JSON.parse(s);
+    }
+    function resetState(){
+      state = {
+        playerName: '',
+        trustPoints: 0,
+        currentLevel: 1,
+        currentQuestionIndex: 0,
+        completedLevels: [],
+        lockedLevels: []
+      };
+      localStorage.removeItem('cyberquest.state');
+      location.reload();
+    }
+
+    function updateSidebar(){
+      levelsListEl.innerHTML = '';
+      let completed = 0;
+      for(const lvl of levels){
+        const btn = document.createElement('button');
+        btn.className = 'level-btn';
+        const done = state.completedLevels.includes(lvl.id);
+        const locked = lvl.id > (Math.max(...state.completedLevels,0) + 1);
+        if(locked) btn.classList.add('locked');
+        btn.title = lvl.desc;
+        btn.disabled = locked;
+        btn.innerHTML = '<span class="dot ' + (locked? 'locked':'') + '"></span> <span style="flex:1;text-align:left">'+ lvl.title +'</span> <small style="opacity:0.6">'+ (done? 'Done':'Play') +'</small>';
+        btn.addEventListener('click',()=> startLevel(lvl.id));
+        levelsListEl.appendChild(btn);
+        if(done) completed++;
+      }
+      progressTextEl.textContent = `${completed} / ${totalLevels} completed`;
+      trustPointsEl.textContent = state.trustPoints;
+      trustBadgeEl.textContent = 'Trust ' + state.trustPoints;
+    }
+
+    /* ---------- Game actions ---------- */
+    const startBtn = document.getElementById('startBtn');
+    const howBtn = document.getElementById('howBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playerNameInput = document.getElementById('playerName');
+    const welcomeCard = document.getElementById('welcomeCard');
+    const questionCard = document.getElementById('questionCard');
+    const questionText = document.getElementById('questionText');
+    const choicesList = document.getElementById('choicesList');
+    const feedbackEl = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+    const finishBtn = document.getElementById('finishBtn');
+    const levelTitle = document.getElementById('levelTitle');
+    const levelDesc = document.getElementById('levelDesc');
+    const currentLevelEl = document.getElementById('currentLevel');
+    const totalLevelsEl = document.getElementById('totalLevels');
+    const finalCard = document.getElementById('finalCard');
+    const questionCardEl = document.getElementById('questionCard');
+    const scoreSummary = document.getElementById('scoreSummary');
+    const printCertBtn = document.getElementById('printCertBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    totalLevelsEl.textContent = totalLevels;
+
+    startBtn.addEventListener('click', ()=>{
+      const name = playerNameInput.value.trim();
+      if(!name){
+        alert('Please type your name so we can save your progress.');
+        playerNameInput.focus();
+        return;
+      }
+      state.playerName = name;
+      saveState();
+      welcomeCard.classList.add('hidden');
+      startLevel(state.currentLevel);
+    });
+
+    howBtn.addEventListener('click', ()=>{
+      alert('Complete short missions. Choose safe answers to earn Trust Points. Block, report and tell if something feels wrong. You can print your certificate at the end.');
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      if(confirm('Reset progress? This will clear saved data.')) resetState();
+    });
+
+    restartBtn.addEventListener('click', ()=>{
+      localStorage.removeItem('cyberquest.state');
+      location.reload();
+    });
+
+    function startLevel(levelId){
+      state.currentLevel = levelId;
+      state.currentQuestionIndex = 0;
+      saveState();
+      renderQuestion();
+    }
+
+    function renderQuestion(){
+      const lvl = levels.find(l=>l.id === state.currentLevel);
+      levelTitle.textContent = lvl.title;
+      levelDesc.textContent = lvl.desc;
+      currentLevelEl.textContent = state.currentLevel;
+      questionCardEl.classList.remove('hidden');
+      finalCard.classList.add('hidden');
+
+      const qObj = lvl.questions[state.currentQuestionIndex];
+      questionText.textContent = qObj.q;
+      choicesList.innerHTML = '';
+      feedbackEl.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      finishBtn.classList.add('hidden');
+
+      qObj.choices.forEach((c,i)=>{
+        const div = document.createElement('div');
+        div.className = 'choice';
+        div.tabIndex = 0;
+        div.setAttribute('role','button');
+        div.setAttribute('aria-pressed','false');
+        div.innerText = c;
+        div.addEventListener('click', ()=> selectChoice(i, div, qObj));
+        div.addEventListener('keydown', (e)=>{ if(e.key==='Enter') selectChoice(i, div, qObj); });
+        choicesList.appendChild(div);
+      });
+    }
+
+    function selectChoice(index, el, qObj){
+      // disable further clicks
+      Array.from(choicesList.children).forEach(ch => ch.style.pointerEvents = 'none');
+      const isCorrect = index === qObj.correct;
+      if(isCorrect){
+        el.classList.add('correct');
+        feedbackEl.textContent = "Good choice! " + qObj.explain;
+        state.trustPoints += 10;
+      } else {
+        el.classList.add('wrong');
+        feedbackEl.textContent = "That choice may be risky. " + qObj.explain;
+        state.trustPoints += 0;
+      }
+      feedbackEl.classList.remove('hidden');
+      updateAfterAnswer();
+      saveState();
+    }
+
+    function updateAfterAnswer(){
+      const lvl = levels.find(l=>l.id === state.currentLevel);
+      const lastIndex = lvl.questions.length - 1;
+      if(state.currentQuestionIndex < lastIndex){
+        nextBtn.classList.remove('hidden');
+        nextBtn.onclick = ()=> {
+          state.currentQuestionIndex++;
+          renderQuestion();
+          saveState();
+        };
+      } else {
+        finishBtn.classList.remove('hidden');
+        finishBtn.onclick = ()=> finishLevel();
+      }
+      updateSidebar();
+    }
+
+    function finishLevel(){
+      // mark completed
+      if(!state.completedLevels.includes(state.currentLevel)){
+        state.completedLevels.push(state.currentLevel);
+      }
+      // unlock next level automatically
+      const nextLevel = state.currentLevel + 1;
+      if(nextLevel <= totalLevels && !state.completedLevels.includes(nextLevel)){
+        // unlocked by virtue of not being locked in UI
+      }
+      // update trust
+      saveState();
+      // show summary or move to next unlocked level
+      questionCardEl.classList.add('hidden');
+      // if all completed, show final card
+      if(state.completedLevels.length >= totalLevels){
+        showFinal();
+      } else {
+        welcomeCard.classList.remove('hidden');
+        welcomeCard.querySelector('h2').textContent = 'Level Completed';
+        welcomeCard.querySelector('.help').textContent = `${levels.find(l=>l.id===state.currentLevel).title} completed. Your Trust Points: ${state.trustPoints}`;
+      }
+      updateSidebar();
+    }
+
+    function showFinal(){
+      finalCard.classList.remove('hidden');
+      welcomeCard.classList.add('hidden');
+      questionCardEl.classList.add('hidden');
+      scoreSummary.innerHTML = `<div><strong>${state.playerName}</strong>, you earned <strong>${state.trustPoints}</strong> Trust Points across ${totalLevels} levels.</div>`;
+      // prepare cert data
+      document.getElementById('certName').innerText = state.playerName;
+      document.getElementById('certPoints').innerText = state.trustPoints + ' Trust Points';
+      document.getElementById('certDate').innerText = (new Date()).toLocaleDateString();
+      updateSidebar();
+    }
+
+    printCertBtn.addEventListener('click', ()=>{
+      // show certificate container then print
+      const cert = document.getElementById('certificate');
+      cert.style.display = 'block';
+      // open print dialog for the certificate element only
+      setTimeout(()=>{
+        window.print();
+        // hide after printing (some browsers keep it visible)
+        cert.style.display = 'none';
+      },250);
+    });
+
+    // load saved state
+    loadState();
+    if(state.playerName){
+      playerNameInput.value = state.playerName;
+    }
+    updateSidebar();
+
+    // if returning and had completed all already
+    if(state.completedLevels && state.completedLevels.length >= totalLevels){
+      // auto show final summary on load
+      document.getElementById('startBtn').textContent = 'Continue';
+      // show final when user presses start
+      startBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        showFinal();
+      });
+    }
+
+    // first time lock scheme: all levels unlocked sequentially by completion
+    // UI generation on load
+    updateSidebar();
+
+    // Accessibility note: focus management
+    document.addEventListener('keydown',(e)=>{
+      if(e.key==='Escape'){
+        // go back to welcome
+        questionCardEl.classList.add('hidden');
+        welcomeCard.classList.remove('hidden');
+      }
+    });
+
+    // Initial trust badge update
+    trustBadgeEl.textContent = 'Trust ' + state.trustPoints;
+
+    // quick autosave loop
+    setInterval(()=> saveState(), 5000);
+  </script>
+</body>
+</html>
+
